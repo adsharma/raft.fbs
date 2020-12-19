@@ -1,0 +1,107 @@
+// Generated from raft-grpc.proto
+
+namespace raft;
+
+enum LogEntryType : int {
+  LOG_ENTRY_COMMAND = 0,
+  LOG_ENTRY_NOOP = 1,
+  LOG_ENTRY_ADD_PEER_DEPRECATED = 2,
+  LOG_ENTRY_REMOVE_PEER_DEPRECATED = 3,
+  LOG_ENTRY_BARRIER = 4,
+  LOG_ENTRY_CONFIGURATION = 5,
+}
+
+union PayloadUnion {
+  InstallSnapshotRequest,
+  Data,
+}
+
+table RaftHeader {
+  protocol_version:int;
+}
+
+table LogEntry {
+  index:ulong;
+  term:ulong;
+  type:LogEntryType;
+  data:[ubyte];
+  extensions:[ubyte];
+}
+
+table PeerNameContainer {
+  peer_name:string;
+}
+
+table AppendEntriesRequest {
+  term:ulong;
+  leader:[ubyte];
+  prev_log_entry:ulong;
+  prev_log_term:ulong;
+  entries:[LogEntry];
+  leader_commit_index:ulong;
+  raft_header:RaftHeader;
+}
+
+table AppendEntriesResponse {
+  term:ulong;
+  last_log:ulong;
+  success:bool;
+  no_retry_backoff:bool;
+  raft_header:RaftHeader;
+}
+
+table RequestVoteRequest {
+  term:ulong;
+  candidate:[ubyte];
+  last_log_index:ulong;
+  last_log_term:ulong;
+  leadership_transfer:bool;
+  raft_header:RaftHeader;
+}
+
+table RequestVoteResponse {
+  term:ulong;
+  peers:[ubyte];
+  granted:bool;
+  raft_header:RaftHeader;
+}
+
+table Data {
+  data:[ubyte];
+}
+
+table InstallSnapshotStream {
+  payload:PayloadUnion;
+}
+
+table InstallSnapshotRequest {
+  term:ulong;
+  leader:[ubyte];
+  last_log_index:ulong;
+  last_log_term:ulong;
+  peers:[ubyte];
+  configuration:[ubyte];
+  config_idx:ulong;
+  size:long;
+  raft_header:RaftHeader;
+}
+
+table InstallSnapshotResponse {
+  term:ulong;
+  success:bool;
+  raft_header:RaftHeader;
+}
+
+table AppendEntriesPipelineResponse {
+  error:string;
+  response:AppendEntriesResponse;
+}
+
+table TimeoutNowRequest {
+  raft_header:RaftHeader;
+}
+
+table TimeoutNowResponse {
+  raft_header:RaftHeader;
+}
+
